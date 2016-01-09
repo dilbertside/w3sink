@@ -1,4 +1,4 @@
-/*! w3sink v0.0.1 - 2014-10-14 
+/*! w3sink v0.0.1 - 2016-01-09 
  *  License: MIT */
 /*
  * CSS_tree() is used to store CSS for graphstream.
@@ -1927,7 +1927,7 @@ function handle_css_content(url, main_CSS_object) {
 }(this));
 
 (function(exports) {
-    'use strict';
+	'use strict';
     var SVG = {
         ns: 'http://www.w3.org/2000/svg',
         xlinkns: 'http://www.w3.org/1999/xlink'
@@ -2758,7 +2758,7 @@ The GDS Grammar:
       return;
     }
 
-    var re = /^\s*([+-]?)(?:"([^"]*)"|'([^']*)'|(\w[[\w\.]*))(.*?)$/;   // ZZZZZZ
+    var re = /^\s*([+-]?)(?:"([^"]*)"|'([^']*)'|(\w[[\w\.]*))(.*?)$/;
 
     var ex = re.exec(parser.line);
     var isRemove,
@@ -3057,7 +3057,7 @@ The GDS Grammar:
             this.shape_name = shape;
 
             var geom = list_shapes[id_shape];
-            //this.shape.geometry.dispose();
+            //this.shape.geometry.dispose();    //
             this.shape.geometry = geom.clone();
             this.shape.geometry.buffersNeedUpdate = true;
         },
@@ -3081,7 +3081,7 @@ The GDS Grammar:
             text.style.display = 'none';
             document.body.appendChild(text);
 
-            // Remove label if it exists.
+            // Remove old label if it  already exists.
             if (list_labels[this.shape.id] !== undefined) {
                 list_labels[this.shape.id].style.display = 'none';
                 delete list_labels[this.shape.id];
@@ -3127,7 +3127,6 @@ The GDS Grammar:
 
         setClass: function(ui_class) {
             this.className = ui_class;
-            //console.log('%c', 'color:red', 'Class for edge ' + this.id + ': ' + ui_class);
         },
 
         setHide: function(is_visible) {
@@ -3146,14 +3145,14 @@ The GDS Grammar:
             text.style.width = 100;
             text.style.height = 100;
             text.innerHTML = label;
-            //text.style.color = color;
+            //text.style.color = white;
             text.style.backgroundColor = color;
             text.style.left = position.x + 'px';
             text.style.top = position.y + 'px';
             text.style.display = 'none';
             document.body.appendChild(text);
 
-            // Remove label if it exists.
+            // Remove old label if it already exists.
             if (list_labels[this.shape.id] !== undefined) {
                 list_labels[this.shape.id].style.display = 'none';
                 delete list_labels[this.shape.id];
@@ -3247,6 +3246,8 @@ The GDS Grammar:
                 var is_inside_fov = is_in_fov(object);
                 var visible = is_visible(object);
 
+                // TODO
+                // Use boundingSphere.center for nodes, to be able to use torus or other "empty center" 3D primitives.
                 if (object.type === 'Node') {
                     vector = object.position;
                 }
@@ -3254,12 +3255,10 @@ The GDS Grammar:
                     vector = object.geometry.boundingSphere.center;
                 }
 
-                //vector = object.geometry.boundingSphere.center;
-
                 var projection = projector.projectVector(vector.clone(), camera);
                 var distance = vector.distanceTo(camera.position);
 
-                // If the label can seen, refresh its position and color and display it.
+                // If the label can be seen, refresh its position and color and display it.
                 if (visible && is_inside_fov && distance < field_depth) {
                     label.style.display = '';
                     update_label_color(object, label);
@@ -3268,16 +3267,19 @@ The GDS Grammar:
                     label.style.top = projection.y + 'px';
                     label.style.left = projection.x + 'px';
                 }
+                // Hide non-visible labels. o_O
                 else {
                     label.style.display = 'none';
                 }
             }
         }
 
-        // Return true if object's *center* is not behind another object.
+        // Return true if object's center is not behind another object.
         function is_visible(object) {
             var direction;
 
+            // TODO
+            // Use boundingSphere.center for nodes, to be able to use torus or other "empty center" 3D primitives.
             if (object.type === 'Node') {
                 direction = object.position.clone();
             }
@@ -3294,11 +3296,11 @@ The GDS Grammar:
 
             // If current object is not the first seen in the line of sight from camera to itself...
             if (ray_intersects[0] && object.id !== ray_intersects[0].object.id) {
-                // ..., it is hidden.
+                // ..., it is hidden...
                 return false;
             }
 
-            // Object is visible.
+            // ...; otherwise, it is visible.
             return true;
         }
 
@@ -3338,7 +3340,7 @@ The GDS Grammar:
             var id = node.shape.id;
             this.scene.remove(node.shape);
 
-            // Remove label if it exists.
+            // Remove label too, if it exists.
             if (list_labels[id] !== undefined) {
                 list_labels[id].style.display = 'none';
                 delete list_labels[id];
@@ -3359,7 +3361,7 @@ The GDS Grammar:
             var id = edge.shape.id;
             this.scene.remove(edge.shape);
 
-            // Remove label if it exists.
+            // Remove label too, if it exists.
             if (list_labels[id] !== undefined) {
                 list_labels[id].style.display = 'none';
                 delete list_labels[id];
